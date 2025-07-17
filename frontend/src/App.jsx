@@ -26,7 +26,7 @@ function App() {
     const formData = new FormData();
     formData.append('resume', file);
     try {
-      const res = await axios.post('http://localhost:5000/upload', formData, {
+      const res = await axios.post('https://resume-reviewer-4ntq.onrender.com/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setFeedback(res.data.feedback);
