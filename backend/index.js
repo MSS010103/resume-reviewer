@@ -53,16 +53,12 @@ async function getGeminiFeedback(resumeText) {
     });
     let text = response.data.candidates?.[0]?.content?.parts?.[0]?.text;
 
-    // Extract JSON from markdown code block if present
-    const match = text.match(/```json\s*([\s\S]*?)```/i) || text.match(/```\s*([\s\S]*?)```/i);
-    if (match) {
-      text = match[1];
-    }
-
+    // Just parse the JSON directly
     let parsed;
     try {
       parsed = JSON.parse(text);
     } catch {
+      // fallback: return everything as suggestions
       return {
         clarity: '',
         strengths: '',
@@ -71,35 +67,7 @@ async function getGeminiFeedback(resumeText) {
       };
     }
 
-    // If the parsed object is actually inside the suggestions field as a string, parse again
-    if (
-      parsed &&
-      typeof parsed === 'object' &&
-      !parsed.clarity &&
-      !parsed.strengths &&
-      !parsed.gaps &&
-      typeof parsed.suggestions === 'string'
-    ) {
-      try {
-        const inner = JSON.parse(parsed.suggestions);
-        return {
-          clarity: inner.clarity || '',
-          strengths: inner.strengths || '',
-          gaps: inner.gaps || '',
-          suggestions: inner.suggestions || ''
-        };
-      } catch {
-        // fallback
-        return {
-          clarity: '',
-          strengths: '',
-          gaps: '',
-          suggestions: parsed.suggestions || 'See above.',
-        };
-      }
-    }
-
-    // Normal case
+    // Return the fields directly
     return {
       clarity: parsed.clarity || '',
       strengths: parsed.strengths || '',
