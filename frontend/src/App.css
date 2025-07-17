@@ -1,0 +1,100 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.container {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  text-align: center;
+  color: #222;
+}
+.container h1 {
+  color: #2563eb;
+  margin-bottom: 1.5rem;
+}
+.upload-form {
+  margin-bottom: 1.5rem;
+}
+.upload-form input[type="file"] {
+  margin-bottom: 1rem;
+}
+.upload-form button {
+  padding: 0.5rem 1.5rem;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.upload-form button:disabled {
+  background: #a5b4fc;
+  cursor: not-allowed;
+}
+.error {
+  color: #dc2626;
+  margin-bottom: 1rem;
+}
+.feedback {
+  text-align: left;
+  margin-top: 2rem;
+  background: #f1f5f9;
+  padding: 1.5rem;
+  border-radius: 8px;
+  color: #222;
+}
+.feedback h2 {
+  margin-top: 0;
+  color: #2563eb;
+}
+.feedback div {
+  margin-bottom: 0.75rem;
+  color: #222;
+}
+.feedback strong {
+  color: #2563eb;
+}
