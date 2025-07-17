@@ -46,19 +46,25 @@ app.post('/upload', upload.single('resume'), async (req, res) => {
 async function getGeminiFeedback(resumeText) {
   const apiKey = process.env.GEMINI_API_KEY;
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
-  const prompt = `You are a resume expert. Analyze the following resume and provide feedback in JSON with these fields:\n- clarity (as a single string summary, not an object or array)\n- strengths (as a single string)\n- gaps (as a single string)\n- suggestions (as a single string)\nDo not use arrays or objects for any field. Do not include markdown or code blocks. Only return a valid JSON object.\n\nResume:\n${resumeText}`;
+  const prompt = `You are a resume expert. Analyze the following resume and provide feedback in JSON with these fields, Do not include markdown or code blocks.:\n- clarity (as a single string summary, not an object or array)\n- strengths (as a single string)\n- gaps (as a single string)\n- suggestions (as a single string)\nDo not use arrays or objects for any field. Again remember,Do not include markdown or code blocks. Only return a valid JSON object.\n\nResume:\n${resumeText}`;
   try {
     const response = await axios.post(url, {
       contents: [{ role: "user", parts: [{ text: prompt }] }]
     });
     let text = response.data.candidates?.[0]?.content?.parts?.[0]?.text;
 
-    // Just parse the JSON directly
+    // Extract JSON from markdown code block if present
+    const match = text.match(/```json\s*([\s\S]*?)```/i) || text.match(/```\s*([\s\S]*?)```/i);
+    if (match) {
+      text = match[1];
+    }
+    text = text.trim(); // Trim whitespace
+
     let parsed;
     try {
       parsed = JSON.parse(text);
-    } catch {
-      // fallback: return everything as suggestions
+    } catch (e) {
+      console.error('First JSON.parse failed:', e, 'Text:', text);
       return {
         clarity: '',
         strengths: '',
@@ -67,7 +73,35 @@ async function getGeminiFeedback(resumeText) {
       };
     }
 
-    // Return the fields directly
+    // Double-parse if needed
+    if (
+      parsed &&
+      typeof parsed === 'object' &&
+      !parsed.clarity &&
+      !parsed.strengths &&
+      !parsed.gaps &&
+      typeof parsed.suggestions === 'string'
+    ) {
+      try {
+        const inner = JSON.parse(parsed.suggestions);
+        return {
+          clarity: inner.clarity || '',
+          strengths: inner.strengths || '',
+          gaps: inner.gaps || '',
+          suggestions: inner.suggestions || ''
+        };
+      } catch (e) {
+        console.error('Second JSON.parse failed:', e, 'Suggestions:', parsed.suggestions);
+        return {
+          clarity: '',
+          strengths: '',
+          gaps: '',
+          suggestions: parsed.suggestions || 'See above.',
+        };
+      }
+    }
+
+    // Normal case
     return {
       clarity: parsed.clarity || '',
       strengths: parsed.strengths || '',

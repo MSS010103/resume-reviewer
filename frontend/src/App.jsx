@@ -50,6 +50,11 @@ function App() {
           {loading ? 'Analyzing...' : 'Upload & Get Feedback'}
         </button>
       </form>
+      {loading && (
+        <div style={{ color: '#888', marginTop: '0.5rem' }}>
+          Response may be delayed due to overloaded AI model. Please wait...
+        </div>
+      )}
       {error && <div className="error">{error}</div>}
       {feedback && (
         <div className="feedback">
